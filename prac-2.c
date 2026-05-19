@@ -5,17 +5,16 @@ int main(int argc, char* argv[]) {
 
     MPI_Init(&argc, &argv);
 
-    int num;
+    int num, rango;
     MPI_Comm_size(MPI_COMM_WORLD, &num);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rango);
 
     if (num % 2 != 0) {
-        printf("Se necesita un número par de procesos.\n");
+        if (rango == 0)
+            printf("Se necesita un número par de procesos.\n");
         MPI_Finalize();
         return 0;
     }
-
-    int rango;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rango);
 
     int es_par;
     if (rango % 2 == 0)
@@ -34,10 +33,7 @@ int main(int argc, char* argv[]) {
 
     while (contador < 3) {
         if (es_par) {
-            if (contador == 0)
-                printf("Soy el proceso %d y juego con el proceso %d. Tengo  %d y envío %d\n", rango, mi_pareja, valor, valor+1);
-            else
-                printf("Soy el proceso %d y juego con el proceso %d. Recibo %d y envío %d\n", rango, mi_pareja, valor, valor+1);
+            printf("Soy el proceso %d y juego con el proceso %d. Recibo %d y envío %d\n", rango, mi_pareja, valor, valor+1);
             valor++;
             MPI_Send(&valor, 1, MPI_INT, mi_pareja, 0, MPI_COMM_WORLD);
             MPI_Recv(&valor, 1, MPI_INT, mi_pareja, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
